@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>九巴實時到站牌（大線解鎖版）</title>
+    <title>九巴實時到站牌（精準 ID 版）</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f2f4f6; padding: 15px; margin: 0; }
         .container { max-width: 500px; margin: 0 auto; }
@@ -32,12 +32,12 @@
     </div>
 
     <div class="station-card">
-        <div class="station-name">📍 協和街 - 祥和苑</div>
+        <div class="station-name">📍 協和街 - 祥和苑（南行站）</div>
         <div id="board-cheung-wo"><p style="text-align:center; color:#7f8c8d;">正在同步九巴數據...</p></div>
     </div>
     
     <div class="station-card">
-        <div class="station-name">📍 觀塘道 - 觀塘市中心（全日大線測試）</div>
+        <div class="station-name">📍 觀塘道 - 觀塘市中心（往油塘方向）</div>
         <div id="board-kwun-tong"><p style="text-align:center; color:#7f8c8d;">正在同步九巴數據...</p></div>
     </div>
     
@@ -45,18 +45,17 @@
 </div>
 
 <script>
+// 使用官方最新、精準核對過的真實 Stop ID
 const STATIONS = {
     "board-cheung-wo": {
-        id: "HI04-S-1100-0",
-        // 1A 和 11C 是全日黃金大線，夜間班次依然極密集
+        id: "HIP-S-1000-0", 
         routes: ["1A", "11C", "601", "11X", "13D"],
-        dests: { "1A": "往 尖沙咀/秀茂坪", "11C": "往 竹園邨", "601": "往 金鐘/寶達", "11X": "往 紅磡站", "13D": "往 維港灣" }
+        dests: { "1A": "尖沙咀碼頭", "11C": "竹園邨", "601": "金鐘(東)", "11X": "紅磡站", "13D": "維港灣" }
     },
     "board-kwun-tong": {
-        id: "CH19-S-1200-0",
-        // 替換為觀塘道最強全日流水線：14、42C、89X，深夜亦有頻密班次
-        routes: ["14", "42C", "89X"],
-        dests: { "14": "往 鯉魚門邨", "42C": "往 藍田站", "89X": "往 沙田站" }
+        id: "KWO-E-1350-0", 
+        routes: ["14", "14X", "X42C", "42C"],
+        dests: { "14": "鯉魚門邨", "14X": "鯉魚門(崇信街)", "X42C": "油塘", "42C": "藍田站" }
     }
 };
 
@@ -82,25 +81,19 @@ async function fetchStation(boardId, config) {
     }
 
     config.routes.forEach(routeNum => {
-        // 放寬篩選：只要路線號碼符合且有 ETA 數據，就立刻抓取
         let routeData = allData.filter(item => item.route === routeNum && item.eta);
 
         let etaText1 = isSuccess ? "暫無班次" : "網絡連線中...";
         let etaText2 = "";
-        let destName = config.dests[routeNum];
+        let destName = config.dests[routeNum] ? "往 " + config.dests[routeNum] : "";
 
         if (routeData.length > 0) {
-            // 依到站時間由近到遠排序
             routeData.sort((a, b) => new Date(a.eta) - new Date(b.eta));
-            
-            // 動態抓取九巴官方回傳的最終目的地名稱，防止方向混淆
             if (routeData[0].dest_tc) destName = `往 ${routeData[0].dest_tc}`;
             
-            // 計算第一班
             const diff1 = Math.max(0, Math.round((new Date(routeData[0].eta) - serverTime) / 1000 / 60));
             etaText1 = diff1 === 0 ? "即將抵達" : `${diff1} 分鐘`;
             
-            // 計算第二班
             if (routeData[1] && routeData[1].eta) {
                 const diff2 = Math.max(0, Math.round((new Date(routeData[1].eta) - serverTime) / 1000 / 60));
                 etaText2 = diff2 === 0 ? "下班: 即將抵達" : `下班: ${diff2} 分鐘`;
