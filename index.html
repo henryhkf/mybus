@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>九巴實時到站牌（多坑位精準版）</title>
+    <title>九巴實時到站牌（API 狀態觀測版）</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f2f4f6; padding: 15px; margin: 0; }
         .container { max-width: 500px; margin: 0 auto; }
@@ -21,31 +21,47 @@
         .eta-next { color: #888; font-size: 0.8rem; margin-top: 2px; display: block; }
         .no-bus { color: #7f8c8d; font-weight: normal; font-size: 0.95rem; }
         .update-time { text-align: center; font-size: 0.8rem; color: #95a5a6; margin-top: 15px; }
+        
+        /* 觀測面板專用樣式 */
+        .monitor-panel { background-color: #222; color: #2ecc71; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 0.75rem; margin-top: 10px; border-left: 4px solid #bd1a1a; }
+        .monitor-title { font-weight: bold; color: #fff; margin-bottom: 4px; border-bottom: 1px solid #444; padding-bottom: 2px; }
+        .status-ok { color: #2ecc71; font-weight: bold; }
+        .status-err { color: #e74c3c; font-weight: bold; }
+        .raw-data-preview { background-color: #111; padding: 5px; border-radius: 4px; color: #aaa; max-height: 80px; overflow-y: auto; white-space: pre-wrap; font-size: 0.7rem; margin-top: 5px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h1>🚍 實時巴士到站牌</h1>
+        <h1>🚍 實時巴士到站牌 (調試版)</h1>
         <button class="refresh-btn" onclick="initUpdate()">手動更新</button>
     </div>
 
     <div class="station-card">
         <div class="station-name">📍 協和街 - 祥和苑（南行站）</div>
         <div id="board-cheung-wo"><p style="text-align:center; color:#7f8c8d;">正在同步九巴數據...</p></div>
+        
+        <div class="monitor-panel">
+            <div class="monitor-title">📊 祥和苑 API 連線狀態觀測</div>
+            <div id="monitor-cheung-wo">正在檢測網絡...</div>
+        </div>
     </div>
     
     <div class="station-card">
         <div class="station-name">📍 觀塘道 - 觀塘市中心（往油塘方向）</div>
         <div id="board-kwun-tong"><p style="text-align:center; color:#7f8c8d;">正在同步九巴數據...</p></div>
+        
+        <div class="monitor-panel">
+            <div class="monitor-title">📊 觀塘市中心 API 連線狀態觀測</div>
+            <div id="monitor-kwun-tong">正在檢測網絡...</div>
+        </div>
     </div>
     
     <div class="update-time" id="last-update"></div>
 </div>
 
 <script>
-// 精準將路線與其各自在官方數據庫對應的 Stop ID 綁定
 const STATIONS = {
     "board-cheung-wo": [
         { route: "1A",  id: "HI04-S-1100-0", dest: "尖沙咀碼頭" },
@@ -61,38 +77,53 @@ const STATIONS = {
     ]
 };
 
-// 用來儲存 API 回傳結果的暫存器，避免重覆發送同一個站點的網絡請求
 let stopCache = {};
+let stopMonitorLog = {};
 
 async function processBoard(boardId, routeList) {
     const boardEl = document.getElementById(boardId);
+    const monitorEl = document.getElementById("monitor-" + boardId.split("-")[1] + "-" + boardId.split("-")[2]);
     let html = "";
     const now = new Date();
     let serverTime = now;
 
-    // 1. 先收集這個看板需要請求哪些不同的唯一 Stop ID
     const uniqueIds = [...new Set(routeList.map(item => item.id))];
+    stopMonitorLog[boardId] = "";
 
-    // 2. 併發請求九巴 API 獲取最新的實時大數據
+    // 併發網絡連線檢測
     await Promise.all(uniqueIds.map(async (id) => {
         try {
-            const response = await fetch(`https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${id}`);
+            // 加上時間戳，防止被瀏覽器快取舊的空數據
+            const response = await fetch(`https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${id}?t=${Date.now()}`);
+            
+            stopMonitorLog[boardId] += `站點 [${id}] -> HTTP 狀態碼: <span class="status-ok">${response.status} ${response.statusText}</span><br>`;
+            
             if (response.ok) {
                 const result = await response.json();
                 if (result && Array.isArray(result.data)) {
                     stopCache[id] = result.data;
                     if (result.generated_timestamp) serverTime = new Date(result.generated_timestamp);
+                    
+                    stopMonitorLog[boardId] += `  └ 成功接收：數據包內含 ${result.data.length} 筆原始路線資料。<br>`;
+                    
+                    // 擷取前兩筆原始數據預覽，看九巴到底吐了什麼字出來
+                    const previewData = result.data.slice(0, 2);
+                    stopMonitorLog[boardId] += `  └ 原始數據抽樣預覽：<div class="raw-data-preview">${JSON.stringify(previewData)}</div>`;
+                } else {
+                    stopMonitorLog[boardId] += `  └ <span class="status-err">警告：回傳的 data 欄位不是陣列或不存在！</span><br>`;
                 }
             }
         } catch (e) {
-            console.error(`讀取站點 ${id} 失敗:`, e);
+            stopMonitorLog[boardId] += `站點 [${id}] -> <span class="status-err">連線失敗原因: ${e.message}</span><br>`;
         }
     }));
 
-    // 3. 逐條路線依據正確的細分 ID 從快取裡撈出時間並渲染
+    // 更新觀測面板畫面
+    monitorEl.innerHTML = stopMonitorLog[boardId];
+
+    // 渲染巴士看板
     routeList.forEach(info => {
         const rawData = stopCache[info.id] || [];
-        // 過濾出符合該路線且有實時時間的班次
         let routeData = rawData.filter(item => item.route === info.route && item.eta);
 
         let etaText1 = "暫無班次";
@@ -130,16 +161,6 @@ async function processBoard(boardId, routeList) {
 }
 
 function initUpdate() {
-    stopCache = {}; // 每次刷新前清空舊快取
+    stopCache = {}; 
     processBoard("board-cheung-wo", STATIONS["board-cheung-wo"]);
-    processBoard("board-kwun-tong", STATIONS["board-kwun-tong"]);
-    
-    const now = new Date();
-    document.getElementById('last-update').innerText = `最後更新時間: ${now.toLocaleTimeString()}`;
-}
-
-initUpdate();
-setInterval(initUpdate, 30000); // 每 30 秒全自動同步
-</script>
-</body>
-</html>
+    processBoard("board-kw
