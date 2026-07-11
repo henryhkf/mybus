@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>祥和苑巴士報站屏 (彈性文字響應版)</title>
+    <title>祥和苑巴士報站屏 (極致飽滿版)</title>
     <style>
         :root {
             --kmb-red: #C80C18;
@@ -26,59 +26,57 @@
             background-color: var(--kmb-light-bg);
             color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-            padding: 2vw;
+            padding: 8px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        /* 標題大小隨螢幕等比縮放 */
         .app-header {
             background-color: var(--kmb-red);
             color: #FFFFFF;
-            font-size: 3vw;
+            font-size: clamp(20px, 4vh, 28px);
             font-weight: bold;
             text-align: center;
-            padding: 2vh 0;
-            border-radius: 12px;
-            margin-bottom: 2vh;
-            box-shadow: 0 4px 10px rgba(200, 12, 24, 0.15);
+            padding: 6px 0;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 6px rgba(200, 12, 24, 0.1);
             letter-spacing: 1px;
             flex-shrink: 0;
         }
 
-        /* 響應式網格：寬度足夠時自動雙欄，太窄時自動單欄 */
         .list-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 1.5vw;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 8px;
             flex-grow: 1;
         }
 
-        /* 站點卡片 */
+        /* 站點卡片：消除不必要的垂直膨脹 */
         .station-group {
             background-color: var(--card-bg);
-            border-radius: 14px;
-            padding: 1vh 2vw;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            border-left: 0.6vw solid var(--kmb-red);
+            border-radius: 10px;
+            padding: 2px 16px; /* 極致緊湊的上下留白 */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border-left: 6px solid var(--kmb-red);
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
         .station-group.cross-zone {
-            border-left: 0.6vw solid var(--cross-harbor-green);
+            border-left: 6px solid var(--cross-harbor-green);
         }
 
-        /* 路線橫條 */
+        /* 路線橫條：精確限制上下 5px 留白 */
         .route-block {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 1.8vh 0;
+            padding: 5px 0; /* 鎖死上下留白 */
             border-bottom: 1px solid #E5E5EA;
-            gap: 1vw;
+            gap: 12px;
         }
 
         .route-block:last-child {
@@ -88,20 +86,19 @@
         .meta-left {
             display: flex;
             align-items: center;
-            gap: 1.5vw;
+            gap: 16px;
             flex-shrink: 0;
-            max-width: 55%; /* 限制左側寬度，防止目的地擠壓到右側時間 */
         }
 
-        /* 號碼方塊大小與文字隨螢幕同步縮放 */
+        /* 號碼方塊：放大字體，充實畫面 */
         .route-no {
-            font-size: 4vw;
+            font-size: clamp(24px, 4.5vh, 38px);
             font-weight: bold;
             background-color: var(--kmb-red);
             color: #FFFFFF;
-            padding: 0.4vw 1.5vw;
-            border-radius: 8px;
-            min-width: 9vw;
+            padding: 2px 12px;
+            border-radius: 6px;
+            min-width: 85px;
             text-align: center;
             display: inline-block;
         }
@@ -113,13 +110,12 @@
         .details {
             display: flex;
             flex-direction: column;
-            flex-wrap: wrap;
         }
 
-        /* 目的地字體大小隨螢幕縮放 */
+        /* 目的地字體放大 */
         .destination {
             color: var(--text-main);
-            font-size: 2.3vw;
+            font-size: clamp(18px, 3vh, 24px);
             font-weight: bold;
             line-height: 1.2;
         }
@@ -128,9 +124,8 @@
         .eta-container {
             display: flex;
             flex-direction: column;
-            gap: 0.5vh;
+            gap: 2px;
             text-align: right;
-            flex-grow: 1;
             justify-content: center;
         }
 
@@ -138,54 +133,45 @@
             display: flex;
             justify-content: flex-end;
             align-items: center;
-            gap: 0.8vw;
+            gap: 12px;
+            line-height: 1.2;
         }
 
         .eta-row.next-bus {
-            opacity: 0.8;
+            opacity: 0.75;
         }
 
-        /* 備註字體隨螢幕縮放 */
+        /* 備註字體調整 */
         .remark {
             color: var(--text-dim);
-            font-size: 1.4vw;
+            font-size: clamp(11px, 1.8vh, 14px);
             white-space: nowrap;
         }
 
-        /* 時間字體大小隨螢幕縮放 */
+        /* 第一班次時間加大，撐滿右側空間 */
         .eta-time {
-            font-size: 3vw;
+            font-size: clamp(22px, 4vh, 32px);
             font-weight: bold;
             color: var(--time-green);
             white-space: nowrap;
-            min-width: 5.5ch;
+            min-width: 6ch;
             text-align: right;
         }
         
+        /* 第二班次時間 */
         .eta-row.next-bus .eta-time {
-            font-size: 2.3vw;
+            font-size: clamp(16px, 3vh, 22px);
         }
 
         /* 頁尾狀態欄 */
         .status {
             text-align: center;
-            font-size: 1.3vw;
+            font-size: 12px;
             color: var(--text-dim);
-            margin-top: 2vh;
-            padding-top: 1vh;
+            margin-top: 6px;
+            padding-top: 4px;
             border-top: 1px solid #E5E5EA;
             flex-shrink: 0;
-        }
-
-        /* 當螢幕非常小（例如分屏窄視窗）時的保底字體大小 */
-        @media (max-width: 480px) {
-            .app-header { font-size: 20px; }
-            .route-no { font-size: 24px; min-width: 65px; }
-            .destination { font-size: 16px; }
-            .eta-time { font-size: 20px; }
-            .eta-row.next-bus .eta-time { font-size: 16px; }
-            .remark { font-size: 11px; }
-            .status { font-size: 11px; }
         }
     </style>
 </head>
