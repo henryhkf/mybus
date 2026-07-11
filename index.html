@@ -2,89 +2,96 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>巴士報站屏</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>祥和苑巴士報站屏</title>
     <style>
-        :root { --kmb-red: #C80C18; --kmb-light-bg: #F5F5F7; --card-bg: #FFFFFF; --text-main: #222222; --text-dim: #777777; --time-green: #008736; }
-        body { background-color: var(--kmb-light-bg); font-family: sans-serif; padding: 8px; margin: 0; }
+        * { box-sizing: border-box; }
+        :root { --kmb-red: #C80C18; --kmb-light-bg: #F5F5F7; --card-bg: #FFFFFF; --text-dim: #777777; --time-green: #008736; }
+        body { background-color: var(--kmb-light-bg); font-family: -apple-system, sans-serif; padding: 10px; margin: 0; }
         
-        /* 統一的容器，設定相同的寬度限制 */
-        .page-wrapper { 
-            display: flex; 
-            flex-direction: column; 
-            max-width: 600px; 
-            margin: 0 auto; 
-            gap: 8px; 
-        }
-
-        .app-header { 
-            background-color: var(--kmb-red); 
-            color: #FFFFFF; 
-            font-size: 22px; 
-            font-weight: bold; 
-            text-align: center; 
-            padding: 12px 0; 
-            border-radius: 8px; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+        .page-wrapper { display: flex; flex-direction: column; width: 100%; max-width: 600px; margin: 0 auto; gap: 8px; }
         
-        .station-group { background: var(--card-bg); border-radius: 10px; padding: 8px 16px; border-left: 6px solid var(--kmb-red); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .route-block { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; }
-        .route-no { font-weight: bold; background: var(--kmb-red); color: #fff; padding: 2px 8px; border-radius: 4px; min-width: 50px; text-align: center; }
-        .details { margin-left: 12px; flex-grow: 1; }
-        .current-stop { font-size: 11px; color: var(--text-dim); }
-        .destination-text { font-weight: bold; font-size: 16px; display: block; }
-        .eta-container { text-align: right; display: flex; flex-direction: column; }
-        .eta-row { height: 20px; font-weight: bold; color: var(--time-green); font-size: 15px; }
+        .app-header { background-color: var(--kmb-red); color: #FFFFFF; font-size: 20px; font-weight: bold; text-align: center; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        
+        .station-group { background: var(--card-bg); border-radius: 10px; padding: 10px 15px; border-left: 6px solid var(--kmb-red); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .route-block { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
+        .route-block:last-child { border-bottom: none; }
+        
+        .route-no { font-weight: bold; background: var(--kmb-red); color: #fff; padding: 4px 8px; border-radius: 4px; min-width: 45px; text-align: center; font-size: 14px; }
+        .details { margin-left: 10px; flex-grow: 1; }
+        .current-stop { font-size: 11px; color: var(--text-dim); display: block; }
+        .destination-text { font-weight: bold; font-size: 15px; }
+        
+        .eta-container { text-align: right; display: flex; flex-direction: column; min-width: 60px; }
+        .eta-row { height: 20px; font-weight: bold; color: var(--time-green); font-size: 14px; }
         .eta-next { font-size: 12px; opacity: 0.7; }
     </style>
 </head>
 <body>
 
 <div class="page-wrapper">
-    <div class="app-header">巴士報站屏</div>
+    <div class="app-header">祥和苑 巴士報站屏</div>
 
-    <div class="station-group" id="zone-1">
-        <div class="route-block" data-route="1A" data-stop="AE2A9F719AB5E353"><span class="route-no">1A</span><div class="details"><span class="current-stop">祥和苑 往</span><span class="destination-text">尖沙咀碼頭</span></div><div class="eta-container"></div></div>
-        <div class="route-block" data-route="13D" data-stop="AE2A9F719AB5E353"><span class="route-no">13D</span><div class="details"><span class="current-stop">祥和苑 往</span><span class="destination-text">維港灣</span></div><div class="eta-container"></div></div>
-    </div>
-    <div class="station-group" id="zone-2">
-        <div class="route-block" data-route="601" data-stop="6CEE063506576EDB"><span class="route-no" style="background:#007A53">601</span><div class="details"><span class="current-stop">祥和苑 往</span><span class="destination-text">金鐘(東)</span></div><div class="eta-container"></div></div>
-        <div class="route-block" data-route="28B" data-stop="6CEE063506576EDB"><span class="route-no">28B</span><div class="details"><span class="current-stop">祥和苑 往</span><span class="destination-text">啟德(啟晴邨)</span></div><div class="eta-container"></div></div>
-    </div>
-    <div class="station-group" id="zone-3">
-        <div class="route-block" data-route="11X" data-stop="073C44CE5FF431BC"><span class="route-no">11X</span><div class="details"><span class="current-stop">祥和苑 往</span><span class="destination-text">紅磡站</span></div><div class="eta-container"></div></div>
-        <div class="route-block" data-route="93A" data-stop="073C44CE5FF431BC"><span class="route-no">93A</span><div class="details"><span class="current-stop">祥和苑 往</span><span class="destination-text">觀塘碼頭</span></div><div class="eta-container"></div></div>
-    </div>
-    <div class="station-group" id="zone-4">
-        <div class="route-block" data-route="11C" data-stop="A0FDF34B2D278750"><span class="route-no">11C</span><div class="details"><span class="current-stop">祥和苑 往</span><span class="destination-text">竹園邨</span></div><div class="eta-container"></div></div>
-    </div>
-    <div class="station-group" id="zone-5">
-        <div class="route-block" data-route="215X" data-stop="B568727F49CD11A3"><span class="route-no">215X</span><div class="details"><span class="current-stop">創紀之城 往</span><span class="destination-text">九龍站</span></div><div class="eta-container"></div></div>
-        <div class="route-block" data-route="215X" data-stop="AA97FFC49AE957A5"><span class="route-no">215X</span><div class="details"><span class="current-stop">理工大學 往</span><span class="destination-text">藍田(廣田邨)</span></div><div class="eta-container"></div></div>
-        <div class="route-block" data-route="14X" data-stop="AA97FFC49AE957A5"><span class="route-no">14X</span><div class="details"><span class="current-stop">理工大學 往</span><span class="destination-text">油塘</span></div><div class="eta-container"></div></div>
-    </div>
+    <div id="route-list">
+        </div>
 </div>
 
 <script>
+    // 路線定義 (這裡整合了所有路線)
+    const routes = [
+        { route: '1A',  stop: 'AE2A9F719AB5E353', from: '祥和苑', to: '尖沙咀碼頭', zone: 'zone-1' },
+        { route: '13D', stop: 'AE2A9F719AB5E353', from: '祥和苑', to: '維港灣', zone: 'zone-1' },
+        { route: '601', stop: '6CEE063506576EDB', from: '祥和苑', to: '金鐘(東)', zone: 'zone-2', color: '#007A53' },
+        { route: '28B', stop: '6CEE063506576EDB', from: '祥和苑', to: '啟德(啟晴邨)', zone: 'zone-2' },
+        { route: '11X', stop: '073C44CE5FF431BC', from: '祥和苑', to: '紅磡站', zone: 'zone-3' },
+        { route: '93A', stop: '073C44CE5FF431BC', from: '祥和苑', to: '觀塘碼頭', zone: 'zone-3' },
+        { route: '11C', stop: 'A0FDF34B2D278750', from: '祥和苑', to: '竹園邨', zone: 'zone-4' },
+        { route: '215X', stop: 'B568727F49CD11A3', from: '創紀之城', to: '九龍站', zone: 'zone-5' },
+        { route: '215X', stop: 'AA97FFC49AE957A5', from: '理工大學', to: '藍田(廣田邨)', zone: 'zone-5' },
+        { route: '14X',  stop: 'AA97FFC49AE957A5', from: '理工大學', to: '油塘', zone: 'zone-5' }
+    ];
+
+    // 初始化渲染
+    const container = document.getElementById('route-list');
+    const zones = {};
+    routes.forEach(r => {
+        if (!zones[r.zone]) {
+            zones[r.zone] = document.createElement('div');
+            zones[r.zone].className = 'station-group';
+            zones[r.zone].style.marginBottom = '8px';
+            container.appendChild(zones[r.zone]);
+        }
+        const block = document.createElement('div');
+        block.className = 'route-block';
+        block.dataset.route = r.route;
+        block.dataset.stop = r.stop;
+        block.innerHTML = `
+            <span class="route-no" style="${r.color ? 'background:'+r.color : ''}">${r.route}</span>
+            <div class="details">
+                <span class="current-stop">${r.from} 往</span>
+                <span class="destination-text">${r.to}</span>
+            </div>
+            <div class="eta-container"></div>
+        `;
+        zones[r.zone].appendChild(block);
+    });
+
     async function update() {
         const blocks = document.querySelectorAll('.route-block');
         const now = new Date();
         for (let block of blocks) {
-            const route = block.dataset.route;
-            const stop = block.dataset.stop;
-            const container = block.querySelector('.eta-container');
             try {
-                const res = await fetch(`https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${stop}`);
+                const res = await fetch(`https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${block.dataset.stop}`);
                 const json = await res.json();
-                const buses = json.data.filter(b => b.route === route);
+                const buses = json.data.filter(b => b.route === block.dataset.route);
+                const container = block.querySelector('.eta-container');
                 container.innerHTML = '';
                 for (let i = 0; i < 2; i++) {
                     const bus = buses[i];
                     const diff = bus ? Math.max(0, Math.floor((new Date(bus.eta) - now) / 60000)) : null;
-                    const timeText = bus ? (diff === 0 ? '即將抵達' : diff + ' 分鐘') : '--';
-                    container.innerHTML += `<div class="eta-row ${i===1?'eta-next':''}">${timeText}</div>`;
+                    container.innerHTML += `<div class="eta-row ${i===1?'eta-next':''}">${bus ? (diff===0?'即將抵達':diff+' 分鐘') : '--'}</div>`;
                 }
-            } catch(e) { container.innerHTML = '<div class="eta-row">--</div>'; }
+            } catch(e) {}
         }
     }
     update(); setInterval(update, 30000);
