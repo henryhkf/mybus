@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>祥和苑巴士報站屏 (官方直連穩定版)</title>
+    <title>祥和苑巴士報站屏 (官方直連雙班版)</title>
     <style>
         :root {
             --kmb-red: #C80C18;
@@ -64,7 +64,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 18px 0;
+            padding: 14px 0;
             border-bottom: 1px solid #E5E5EA;
         }
 
@@ -105,17 +105,43 @@
             font-weight: bold;
         }
 
+        /* 雙班次右側容器：改為垂直堆疊 */
+        .eta-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            text-align: right;
+            min-width: 160px;
+        }
+
+        /* 單個班次的橫條排版 */
+        .eta-row {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 次班（第二班）字體稍微縮小，做出視覺層次 */
+        .eta-row.next-bus {
+            font-size: 0.9em;
+            opacity: 0.85;
+        }
+
         .remark {
             color: var(--text-dim);
-            font-size: 15px;
-            margin-top: 4px;
+            font-size: 14px;
         }
 
         .eta-time {
-            font-size: 38px;
+            font-size: 30px;
             font-weight: bold;
             color: var(--time-green);
-            text-align: right;
+            white-space: nowrap;
+        }
+        
+        .eta-row.next-bus .eta-time {
+            font-size: 24px;
         }
 
         .status {
@@ -139,10 +165,11 @@
                     <span class="route-no">1A</span>
                     <div class="details">
                         <span class="destination">往 尖沙咀碼頭</span>
-                        <span class="remark" id="rmk-1A">連線中...</span>
                     </div>
                 </div>
-                <span class="eta-time" id="time-1A">-- 分鐘</span>
+                <div class="eta-container" id="eta-container-1A">
+                    <div class="remark">連線中...</div>
+                </div>
             </div>
             
             <div class="route-block" id="block-13D">
@@ -150,10 +177,11 @@
                     <span class="route-no">13D</span>
                     <div class="details">
                         <span class="destination">往 維港灣</span>
-                        <span class="remark" id="rmk-13D">連線中...</span>
                     </div>
                 </div>
-                <span class="eta-time" id="time-13D">-- 分鐘</span>
+                <div class="eta-container" id="eta-container-13D">
+                    <div class="remark">連線中...</div>
+                </div>
             </div>
         </div>
 
@@ -163,10 +191,11 @@
                     <span class="route-no cross-harbor">601</span>
                     <div class="details">
                         <span class="destination">往 金鐘(東)</span>
-                        <span class="remark" id="rmk-601">連線中...</span>
                     </div>
                 </div>
-                <span class="eta-time" id="time-601">-- 分鐘</span>
+                <div class="eta-container" id="eta-container-601">
+                    <div class="remark">連線中...</div>
+                </div>
             </div>
             
             <div class="route-block" id="block-28B">
@@ -174,10 +203,11 @@
                     <span class="route-no">28B</span>
                     <div class="details">
                         <span class="destination">往 啟德(啟晴邨)</span>
-                        <span class="remark" id="rmk-28B">連線中...</span>
                     </div>
                 </div>
-                <span class="eta-time" id="time-28B">-- 分鐘</span>
+                <div class="eta-container" id="eta-container-28B">
+                    <div class="remark">連線中...</div>
+                </div>
             </div>
         </div>
 
@@ -187,10 +217,11 @@
                     <span class="route-no">11X</span>
                     <div class="details">
                         <span class="destination">往 紅磡站</span>
-                        <span class="remark" id="rmk-11X">連線中...</span>
                     </div>
                 </div>
-                <span class="eta-time" id="time-11X">-- 分鐘</span>
+                <div class="eta-container" id="eta-container-11X">
+                    <div class="remark">連線中...</div>
+                </div>
             </div>
             
             <div class="route-block" id="block-93A">
@@ -198,10 +229,11 @@
                     <span class="route-no">93A</span>
                     <div class="details">
                         <span class="destination">往 寶林</span>
-                        <span class="remark" id="rmk-93A">連線中...</span>
                     </div>
                 </div>
-                <span class="eta-time" id="time-93A">-- 分鐘</span>
+                <div class="eta-container" id="eta-container-93A">
+                    <div class="remark">連線中...</div>
+                </div>
             </div>
         </div>
 
@@ -211,10 +243,11 @@
                     <span class="route-no">11C</span>
                     <div class="details">
                         <span class="destination">往 竹園邨</span>
-                        <span class="remark" id="rmk-11C">連線中...</span>
                     </div>
                 </div>
-                <span class="eta-time" id="time-11C">-- 分鐘</span>
+                <div class="eta-container" id="eta-container-11C">
+                    <div class="remark">連線中...</div>
+                </div>
             </div>
         </div>
 
@@ -226,9 +259,9 @@
         const STOP_A = "AE2A9F719AB5E353"; 
         const STOP_B = "6CEE063506576EDB"; 
         const STOP_C = "073C44CE5FF431BC"; 
-        const STOP_D = "A0FDF34B2D278750"; // 新增 11C 的 Stop ID
+        const STOP_D = "A0FDF34B2D278750"; 
 
-        // 官方直連函數
+        // 官方直連
         async function fetchStation(stopId) {
             const url = `https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${stopId}`;
             const res = await fetch(url);
@@ -236,63 +269,72 @@
             return await res.json();
         }
 
-        function updateUI(routeNo, sourceData, now, timeId, rmkId) {
-            const timeEl = document.getElementById(timeId);
-            const rmkEl = document.getElementById(rmkId);
+        // 渲染雙班次邏輯
+        function updateUI(routeNo, sourceData, now, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = ''; // 清空舊內容
 
             if (!sourceData || !Array.isArray(sourceData)) {
-                timeEl.innerText = "--";
-                timeEl.style.color = "var(--text-dim)";
-                rmkEl.innerText = "暫無班次";
+                container.innerHTML = '<div class="remark">暫無班次</div>';
                 return;
             }
 
-            const match = sourceData.find(bus => bus.route === routeNo && bus.eta);
+            // 篩選出該路線所有有 ETA 的班次
+            const matches = sourceData.filter(bus => bus.route === routeNo && bus.eta);
 
-            if (match) {
-                const diff = Math.max(0, Math.floor((new Date(match.eta) - now) / 1000 / 60));
+            if (matches.length === 0) {
+                container.innerHTML = '<div class="remark">暫無班次</div>';
+                return;
+            }
+
+            // 最多取前 2 班車
+            const maxBuses = Math.min(2, matches.length);
+            
+            for (let i = 0; i < maxBuses; i++) {
+                const bus = matches[i];
+                const diff = Math.max(0, Math.floor((new Date(bus.eta) - now) / 1000 / 60));
                 
-                if (diff === 0) {
-                    timeEl.innerText = "即將抵達";
-                    timeEl.style.color = "var(--time-urgent)";
-                } else {
-                    timeEl.innerText = `${diff} 分鐘`;
-                    timeEl.style.color = diff <= 3 ? "var(--time-urgent)" : "var(--time-green)";
-                }
+                let timeText = diff === 0 ? "即將抵達" : `${diff} 分鐘`;
+                let textColor = (diff <= 3) ? "var(--time-urgent)" : "var(--time-green)";
+                let rmkText = bus.rmk_tc || "實時班次";
                 
-                rmkEl.innerText = match.rmk_tc || "實時 GPS 班次";
-            } else {
-                timeEl.innerText = "--";
-                timeEl.style.color = "var(--text-dim)";
-                rmkEl.innerText = "暫無班次";
+                // 建立班次橫條
+                const row = document.createElement('div');
+                // 第二班加上 .next-bus 樣式縮小字體
+                row.className = i === 0 ? 'eta-row' : 'eta-row next-bus';
+                
+                row.innerHTML = `
+                    <span class="remark">${rmkText}</span>
+                    <span class="eta-time" style="color: ${textColor};">${timeText}</span>
+                `;
+                container.appendChild(row);
             }
         }
 
         async function refreshAll() {
             const now = new Date();
             
-            // 各區塊分流獨立請求，互不影響
             try {
                 const dataA = await fetchStation(STOP_A).catch(() => null);
-                updateUI('1A', dataA?.data, now, 'time-1A', 'rmk-1A');
-                updateUI('13D', dataA?.data, now, 'time-13D', 'rmk-13D');
+                updateUI('1A', dataA?.data, now, 'eta-container-1A');
+                updateUI('13D', dataA?.data, now, 'eta-container-13D');
             } catch(e) {}
 
             try {
                 const dataB = await fetchStation(STOP_B).catch(() => null);
-                updateUI('601', dataB?.data, now, 'time-601', 'rmk-601');
-                updateUI('28B', dataB?.data, now, 'time-28B', 'rmk-28B');
+                updateUI('601', dataB?.data, now, 'eta-container-601');
+                updateUI('28B', dataB?.data, now, 'eta-container-28B');
             } catch(e) {}
 
             try {
                 const dataC = await fetchStation(STOP_C).catch(() => null);
-                updateUI('11X', dataC?.data, now, 'time-11X', 'rmk-11X');
-                updateUI('93A', dataC?.data, now, 'time-93A', 'rmk-93A');
+                updateUI('11X', dataC?.data, now, 'eta-container-11X');
+                updateUI('93A', dataC?.data, now, 'eta-container-93A');
             } catch(e) {}
 
             try {
                 const dataD = await fetchStation(STOP_D).catch(() => null);
-                updateUI('11C', dataD?.data, now, 'time-11C', 'rmk-11C');
+                updateUI('11C', dataD?.data, now, 'eta-container-11C');
             } catch(e) {}
 
             const timeStr = now.toLocaleTimeString('zh-HK', { hour12: false });
