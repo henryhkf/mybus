@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>祥和苑巴士報站屏 (官方直連雙班版)</title>
+    <title>祥和苑巴士報站屏 (響應式雙班版)</title>
     <style>
         :root {
             --kmb-red: #C80C18;
@@ -16,56 +16,69 @@
             --time-urgent: #D9383A;
         }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             background-color: var(--kmb-light-bg);
             color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-            margin: 0;
-            padding: 16px;
-            box-sizing: border-box;
+            padding: clamp(10px, 2vw, 24px);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
+        /* 響應式標題：隨螢幕寬度縮放 */
         .app-header {
             background-color: var(--kmb-red);
             color: #FFFFFF;
-            font-size: 26px;
+            font-size: clamp(20px, 2.5vw, 30px);
             font-weight: bold;
             text-align: center;
-            padding: 18px 0;
+            padding: clamp(12px, 2vh, 22px) 0;
             border-radius: 12px;
-            margin-bottom: 16px;
+            margin-bottom: clamp(12px, 2vh, 20px);
             box-shadow: 0 4px 10px rgba(200, 12, 24, 0.15);
             letter-spacing: 1px;
+            flex-shrink: 0;
         }
 
+        /* 響應式網格：寬度足夠時自動分欄，太窄時自動單欄 */
         .list-container {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: clamp(10px, 1.5vw, 18px);
             flex-grow: 1;
         }
 
+        /* 站點卡片 */
         .station-group {
             background-color: var(--card-bg);
             border-radius: 14px;
-            padding: 8px 16px;
+            padding: 8px clamp(12px, 2vw, 20px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             border-left: 6px solid var(--kmb-red);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .station-group.cross-zone {
             border-left: 6px solid var(--cross-harbor-green);
         }
 
+        /* 路線橫條 */
         .route-block {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 14px 0;
+            padding: clamp(12px, 1.8vh, 20px) 0;
             border-bottom: 1px solid #E5E5EA;
+            gap: 10px;
         }
 
         .route-block:last-child {
@@ -75,17 +88,19 @@
         .meta-left {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: clamp(10px, 1.5vw, 18px);
+            flex-shrink: 0;
         }
 
+        /* 響應式號碼方塊 */
         .route-no {
-            font-size: 40px;
+            font-size: clamp(30px, 3.5vw, 42px);
             font-weight: bold;
             background-color: var(--kmb-red);
             color: #FFFFFF;
-            padding: 6px 14px;
+            padding: 4px clamp(10px, 1.2vw, 16px);
             border-radius: 8px;
-            min-width: 90px;
+            min-width: clamp(75px, 8vw, 95px);
             text-align: center;
             display: inline-block;
         }
@@ -101,55 +116,62 @@
 
         .destination {
             color: var(--text-main);
-            font-size: 24px;
+            font-size: clamp(18px, 2vw, 24px);
             font-weight: bold;
+            white-space: nowrap;
         }
 
-        /* 雙班次右側容器：改為垂直堆疊 */
+        /* 雙班次右側容器 */
         .eta-container {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
             text-align: right;
-            min-width: 160px;
+            flex-grow: 1;
+            justify-content: center;
         }
 
-        /* 單個班次的橫條排版 */
         .eta-row {
             display: flex;
             justify-content: flex-end;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
-        /* 次班（第二班）字體稍微縮小，做出視覺層次 */
+        /* 次班樣式微調 */
         .eta-row.next-bus {
-            font-size: 0.9em;
-            opacity: 0.85;
+            opacity: 0.8;
         }
 
         .remark {
             color: var(--text-dim);
-            font-size: 14px;
+            font-size: clamp(12px, 1.3vw, 15px);
+            white-space: nowrap;
         }
 
+        /* 響應式到站時間 */
         .eta-time {
-            font-size: 30px;
+            font-size: clamp(24px, 2.8vw, 32px);
             font-weight: bold;
             color: var(--time-green);
             white-space: nowrap;
+            min-width: 5ch;
+            text-align: right;
         }
         
         .eta-row.next-bus .eta-time {
-            font-size: 24px;
+            font-size: clamp(18px, 2.2vw, 24px);
         }
 
+        /* 頁尾狀態欄 */
         .status {
             text-align: center;
-            font-size: 13px;
+            font-size: clamp(11px, 1.2vw, 13px);
             color: var(--text-dim);
-            margin-top: auto;
-            padding-top: 16px;
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid #E5E5EA;
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -261,7 +283,6 @@
         const STOP_C = "073C44CE5FF431BC"; 
         const STOP_D = "A0FDF34B2D278750"; 
 
-        // 官方直連
         async function fetchStation(stopId) {
             const url = `https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${stopId}`;
             const res = await fetch(url);
@@ -269,17 +290,15 @@
             return await res.json();
         }
 
-        // 渲染雙班次邏輯
         function updateUI(routeNo, sourceData, now, containerId) {
             const container = document.getElementById(containerId);
-            container.innerHTML = ''; // 清空舊內容
+            container.innerHTML = ''; 
 
             if (!sourceData || !Array.isArray(sourceData)) {
                 container.innerHTML = '<div class="remark">暫無班次</div>';
                 return;
             }
 
-            // 篩選出該路線所有有 ETA 的班次
             const matches = sourceData.filter(bus => bus.route === routeNo && bus.eta);
 
             if (matches.length === 0) {
@@ -287,7 +306,6 @@
                 return;
             }
 
-            // 最多取前 2 班車
             const maxBuses = Math.min(2, matches.length);
             
             for (let i = 0; i < maxBuses; i++) {
@@ -298,9 +316,7 @@
                 let textColor = (diff <= 3) ? "var(--time-urgent)" : "var(--time-green)";
                 let rmkText = bus.rmk_tc || "實時班次";
                 
-                // 建立班次橫條
                 const row = document.createElement('div');
-                // 第二班加上 .next-bus 樣式縮小字體
                 row.className = i === 0 ? 'eta-row' : 'eta-row next-bus';
                 
                 row.innerHTML = `
