@@ -7,17 +7,18 @@
     <style>
         * { box-sizing: border-box; }
         :root { --kmb-red: #C80C18; --bg: #F5F5F7; --card-bg: #FFFFFF; --text-dim: #777777; --time-green: #008736; }
-        body { background-color: var(--bg); font-family: -apple-system, sans-serif; padding: 10px; margin: 0; }
-        .page-wrapper { display: flex; flex-direction: column; width: 100%; max-width: 600px; margin: 0 auto; gap: 8px; }
-        .app-header { background-color: var(--kmb-red); color: #FFFFFF; padding: 15px; text-align: center; font-weight: bold; border-radius: 8px; }
-        .station-group { background: var(--card-bg); border-radius: 10px; padding: 10px 15px; border-left: 6px solid var(--kmb-red); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .route-block { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; min-height: 50px; }
+        body { background-color: var(--bg); font-family: -apple-system, sans-serif; padding: 12px; margin: 0; }
+        .page-wrapper { display: flex; flex-direction: column; width: 100%; max-width: 600px; margin: 0 auto; gap: 12px; }
+        .app-header { background-color: var(--kmb-red); color: #FFFFFF; padding: 16px; text-align: center; font-weight: bold; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+        .station-group { background: var(--card-bg); border-radius: 12px; padding: 12px 16px; border-left: 6px solid var(--kmb-red); box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-direction: column; min-height: 85px; }
+        .station-title { font-size: 11px; color: var(--text-dim); font-weight: bold; margin-bottom: 6px; }
+        .route-block { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; min-height: 48px; }
         .route-block:last-child { border-bottom: none; }
-        .route-no { font-weight: bold; background: var(--kmb-red); color: #fff; padding: 4px 8px; border-radius: 4px; min-width: 45px; text-align: center; font-size: 14px; }
-        .details { margin-left: 10px; flex-grow: 1; }
-        .current-stop { font-size: 11px; color: var(--text-dim); display: block; }
-        .destination-text { font-weight: bold; font-size: 15px; }
-        .eta-container { text-align: right; min-width: 65px; }
+        .route-no { font-weight: bold; background: var(--kmb-red); color: #fff; padding: 4px 8px; border-radius: 5px; min-width: 48px; text-align: center; font-size: 14px; }
+        .details { margin-left: 12px; flex-grow: 1; }
+        .current-stop { font-size: 10px; color: #888; display: block; margin-bottom: 2px; }
+        .destination-text { font-weight: bold; font-size: 15px; color: #333; }
+        .eta-container { text-align: right; min-width: 70px; }
         .eta-row { font-weight: bold; color: var(--time-green); font-size: 14px; height: 20px; line-height: 20px; }
     </style>
 </head>
@@ -30,38 +31,61 @@
 
 <script>
     const routes = [
-        { route: '1A',   stop: 'AE2A9F719AB5E353', from: '祥和苑', to: '尖沙咀碼頭', zone: 'zone-1' },
-        { route: '13D',  stop: 'AE2A9F719AB5E353', from: '祥和苑', to: '維港灣', zone: 'zone-1' },
-        { route: '601',  stop: '6CEE063506576EDB', ctbStop: '001551', from: '祥和苑', to: '金鐘(東)', zone: 'zone-2', isJoint: true },
-        { route: '28B',  stop: '6CEE063506576EDB', from: '祥和苑', to: '啟德(啟晴邨)', zone: 'zone-2' },
-        { route: '11X',  stop: '073C44CE5FF431BC', from: '祥和苑', to: '紅磡站', zone: 'zone-3' },
-        { route: '93A',  stop: '073C44CE5FF431BC', from: '祥和苑', to: '觀塘碼頭', zone: 'zone-3' },
-        { route: '11C',  stop: 'C6E63C45FF2EA573', from: '祥和苑', to: '竹園邨', zone: 'zone-4' },
-        { route: '215X', stop: 'B568727F49CD11A3', from: '創紀之城', to: '九龍站', zone: 'zone-5' },
-        { route: '215X', stop: 'AA97FFC49AE957A5', from: '理工大學', to: '藍田(廣田邨)', zone: 'zone-5' },
-        { route: '14X',  stop: 'AA97FFC49AE957A5', from: '理工大學', to: '油塘', zone: 'zone-5' }
+        { route: '1A',   stop: 'AE2A9F719AB5E353', from: '祥和苑', to: '尖沙咀碼頭', zone: 'xianghe' },
+        { route: '13D',  stop: 'AE2A9F719AB5E353', from: '祥和苑', to: '維港灣', zone: 'xianghe' },
+        { route: '601',  stop: '6CEE063506576EDB', ctbStop: '001551', from: '祥和苑', to: '金鐘(東)', zone: 'xianghe', isJoint: true },
+        { route: '28B',  stop: '6CEE063506576EDB', from: '祥和苑', to: '啟德(啟晴邨)', zone: 'xianghe' },
+        { route: '11X',  stop: '073C44CE5FF431BC', from: '祥和苑', to: '紅磡站', zone: 'xianghe' },
+        { route: '93A',  stop: '073C44CE5FF431BC', from: '祥和苑', to: '觀塘碼頭', zone: 'xianghe' },
+        { route: '11C',  stop: 'C6E63C45FF2EA573', from: '祥和苑', to: '竹園邨', zone: 'xianghe' },
+        { route: '215X', stop: 'B568727F49CD11A3', from: '觀塘轉車站 - 創紀之城', to: '九龍站', zone: 'kwun-tong' },
+        { route: '215X', stop: 'AA97FFC49AE957A5', from: '理工大學', to: '藍田(廣田邨)', zone: 'poly-u' },
+        { route: '14X',  stop: 'AA97FFC49AE957A5', from: '理工大學', to: '油塘', zone: 'poly-u' }
     ];
 
+    routes.sort((a, b) => {
+        const numA = parseInt(a.route);
+        const numB = parseInt(b.route);
+        if (numA !== numB) return numA - numB;
+        return a.route.localeCompare(b.route);
+    });
+
     const listContainer = document.getElementById('route-list');
+    
+    // 定義區塊顯示順序
+    const zoneOrder = ['xianghe', 'kwun-tong', 'poly-u'];
+    const zoneNames = {
+        'xianghe': '祥和苑',
+        'kwun-tong': '觀塘轉車站 - 創紀之城',
+        'poly-u': '理工大學'
+    };
+
     const zoneMap = {};
 
-    routes.forEach(r => {
-        if (!zoneMap[r.zone]) {
-            zoneMap[r.zone] = document.createElement('div');
-            zoneMap[r.zone].className = 'station-group';
-            listContainer.appendChild(zoneMap[r.zone]);
+    // 依照 zoneOrder 順序建立區塊
+    zoneOrder.forEach(zoneKey => {
+        const zoneRoutes = routes.filter(r => r.zone === zoneKey);
+        if (zoneRoutes.length > 0) {
+            const group = document.createElement('div');
+            group.className = 'station-group';
+            group.innerHTML = `<div class="station-title">${zoneNames[zoneKey]}</div>`;
+            listContainer.appendChild(group);
+            zoneMap[zoneKey] = group;
+
+            zoneRoutes.forEach(r => {
+                const block = document.createElement('div');
+                block.className = 'route-block';
+                block.innerHTML = `
+                    <span class="route-no">${r.route}</span>
+                    <div class="details">
+                        <span class="current-stop">${r.from} 往</span>
+                        <span class="destination-text">${r.to}</span>
+                    </div>
+                    <div class="eta-container" id="eta-${r.route}-${r.stop}"></div>
+                `;
+                group.appendChild(block);
+            });
         }
-        const block = document.createElement('div');
-        block.className = 'route-block';
-        block.innerHTML = `
-            <span class="route-no">${r.route}</span>
-            <div class="details">
-                <span class="current-stop">${r.from} 往</span>
-                <span class="destination-text">${r.to}</span>
-            </div>
-            <div class="eta-container" id="eta-${r.route}-${r.stop}"></div>
-        `;
-        zoneMap[r.zone].appendChild(block);
     });
 
     async function update() {
@@ -90,10 +114,12 @@
                 });
 
                 const container = document.getElementById(`eta-${r.route}-${r.stop}`);
-                container.innerHTML = uniqueBuses.length > 0 ? uniqueBuses.slice(0, 2).map(b => {
-                    const mins = Math.round((new Date(b.eta) - now) / 60000);
-                    return `<div class="eta-row">${mins < 1 ? '即將抵達' : mins + ' 分鐘'}</div>`;
-                }).join('') : '<div class="eta-row">--</div>';
+                if (container) {
+                    container.innerHTML = uniqueBuses.length > 0 ? uniqueBuses.slice(0, 2).map(b => {
+                        const mins = Math.round((new Date(b.eta) - now) / 60000);
+                        return `<div class="eta-row">${mins < 1 ? '即將抵達' : mins + ' 分鐘'}</div>`;
+                    }).join('') : '<div class="eta-row">--</div>';
+                }
             } catch(e) {}
         }
     }
