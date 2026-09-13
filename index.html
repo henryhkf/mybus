@@ -25,12 +25,13 @@
 <body>
 
 <div class="page-wrapper">
-    <div class="app-header">祥和苑 巴士報站屏</div>
+    <div class="app-header">祥和苑巴士報站屏</div>
     <div id="route-list"></div>
 </div>
 
 <script>
     const routes = [
+        // 祥和苑出發
         { route: '1A',   stop: 'AE2A9F719AB5E353', from: '祥和苑', to: '尖沙咀碼頭', zone: 'xianghe' },
         { route: '13D',  stop: 'AE2A9F719AB5E353', from: '祥和苑', to: '維港灣', zone: 'xianghe' },
         { route: '601',  stop: '6CEE063506576EDB', ctbStop: '001551', from: '祥和苑', to: '金鐘(東)', zone: 'xianghe', isJoint: true },
@@ -38,9 +39,15 @@
         { route: '11X',  stop: '073C44CE5FF431BC', from: '祥和苑', to: '紅磡站', zone: 'xianghe' },
         { route: '93A',  stop: '073C44CE5FF431BC', from: '祥和苑', to: '觀塘碼頭', zone: 'xianghe' },
         { route: '11C',  stop: 'C6E63C45FF2EA573', from: '祥和苑', to: '竹園邨', zone: 'xianghe' },
+
+        // 觀塘市中心 / 裕民坊出發
+        { route: '14',   stop: '144E9479168069DD', from: '觀塘市中心 / 裕民坊', to: '油塘', zone: 'kwun-tong-center' },
+        { route: '14B',  stop: 'ADE2159E78D37819', from: '觀塘市中心 / 裕民坊', to: '油塘', zone: 'kwun-tong-center' },
+        { route: '14X',  stop: '144E9479168069DD', from: '觀塘市中心 / 裕民坊', to: '油塘', zone: 'kwun-tong-center' },
+
+        // 其他轉乘點
         { route: '215X', stop: 'B568727F49CD11A3', from: '觀塘轉車站 - 創紀之城', to: '九龍站', zone: 'kwun-tong' },
-        { route: '215X', stop: 'AA97FFC49AE957A5', from: '理工大學', to: '藍田(廣田邨)', zone: 'poly-u' },
-        { route: '14X',  stop: 'AA97FFC49AE957A5', from: '理工大學', to: '油塘', zone: 'poly-u' }
+        { route: '215X', stop: 'AA97FFC49AE957A5', from: '理工大學', to: '藍田(廣田邨)', zone: 'poly-u' }
     ];
 
     routes.sort((a, b) => {
@@ -52,17 +59,15 @@
 
     const listContainer = document.getElementById('route-list');
     
-    // 定義區塊顯示順序
-    const zoneOrder = ['xianghe', 'kwun-tong', 'poly-u'];
+    // 設定區塊顯示順序
+    const zoneOrder = ['xianghe', 'kwun-tong-center', 'kwun-tong', 'poly-u'];
     const zoneNames = {
-        'xianghe': '祥和苑',
+        'xianghe': '祥和苑出發',
+        'kwun-tong-center': '觀塘市中心 / 裕民坊',
         'kwun-tong': '觀塘轉車站 - 創紀之城',
         'poly-u': '理工大學'
     };
 
-    const zoneMap = {};
-
-    // 依照 zoneOrder 順序建立區塊
     zoneOrder.forEach(zoneKey => {
         const zoneRoutes = routes.filter(r => r.zone === zoneKey);
         if (zoneRoutes.length > 0) {
@@ -70,7 +75,6 @@
             group.className = 'station-group';
             group.innerHTML = `<div class="station-title">${zoneNames[zoneKey]}</div>`;
             listContainer.appendChild(group);
-            zoneMap[zoneKey] = group;
 
             zoneRoutes.forEach(r => {
                 const block = document.createElement('div');
@@ -90,6 +94,7 @@
 
     async function update() {
         for (let r of routes) {
+            if (r.stop.includes('請填入')) continue; // 略過尚未填入 ID 的項目
             let buses = [];
             try {
                 const kmbRes = await fetch(`https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${r.stop}`);
