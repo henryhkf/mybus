@@ -121,7 +121,7 @@
                 const container = document.getElementById(`eta-${r.route}-${r.stop}`);
                 if (container) {
                     container.innerHTML = uniqueBuses.length > 0 ? uniqueBuses.slice(0, 2).map(b => {
-                        const mins = Math.round((new Date(b.eta) - now) / 60000);
+                        const mins = Math.floor(((new Date(b.eta) - now) - 120000) / 60000); // 減去 120秒 (2分鐘)
                         return `<div class="eta-row">${mins < 1 ? '即將抵達' : mins + ' 分鐘'}</div>`;
                     }).join('') : '<div class="eta-row">--</div>';
                 }
@@ -130,7 +130,7 @@
     }
 
     update();
-    setInterval(update, 30000);
+    setInterval(update, 10000);
 </script>
 </body>
 </html>
